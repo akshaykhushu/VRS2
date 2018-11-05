@@ -1,0 +1,28 @@
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+
+
+    <item
+        android:id="@+id/nav_Images"
+        android:title="Take a new Image" />
+
+    <item
+        android:id="@+id/nav_ListView"
+        android:title="ListView" />
+
+    <!--<item-->
+        <!--android:id="@+id/nav_Categories"-->
+        <!--android:title="Categories" />-->
+
+    <item
+        android:id="@+id/nav_Help"
+        android:title="Help" />
+
+    <item
+        android:id="@+id/nav_TandC"
+        android:title="Terms And Conditions" />
+
+
+    <item
+        android:id="@+id/nav_LogOut"
+        android:title="Log out" />
+</menu>

@@ -1,0 +1,63 @@
+{
+  "project_info": {
+    "project_number": "947428001845",
+    "firebase_url": "https://newb-16ace.firebaseio.com",
+    "project_id": "newb-16ace",
+    "storage_bucket": "newb-16ace.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:947428001845:android:282a6c9d28cce725",
+        "android_client_info": {
+          "package_name": "com.bazr2.aksha.newb"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "947428001845-6a9hfpft4qhg1ljfhpj9g63dqrbsibqv.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.bazr2.aksha.newb",
+            "certificate_hash": "4e8a01efea7dec36b2a7af3e478285534ea9ea86"
+          }
+        },
+        {
+          "client_id": "947428001845-ji4hdmoe24ku4oatqgj8t791ijobr90i.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.bazr2.aksha.newb",
+            "certificate_hash": "1eb757bf6afd8061a84204abdb4705ffa855cfb1"
+          }
+        },
+        {
+          "client_id": "947428001845-nqef84ptpv8t1sdmiqegf1qul894fgo4.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCtruOYJ1HzYsojxAgsFqk1hmFOmefx19M"
+        }
+      ],
+      "services": {
+        "analytics_service": {
+          "status": 1
+        },
+        "appinvite_service": {
+          "status": 2,
+          "other_platform_oauth_client": [
+            {
+              "client_id": "947428001845-nqef84ptpv8t1sdmiqegf1qul894fgo4.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        },
+        "ads_service": {
+          "status": 2
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
