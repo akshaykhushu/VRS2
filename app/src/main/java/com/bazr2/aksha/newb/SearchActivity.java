@@ -46,10 +46,12 @@ public class SearchActivity extends AppCompatActivity {
     RecyclerView resultList;
     DatabaseReference databaseReference;
     ArrayList<String> titleList;
-    ArrayList<String> costList;
+    ArrayList<ArrayList<String>> costList2D;
     ArrayList<ArrayList<String>> bitmapList2D;
     ArrayList<String> bitmapList;
+    ArrayList<String> costList;
     ArrayList<String> descriptionList;
+    ArrayList<ArrayList<String>> descriptionList2D;
     ArrayList<String> uidList;
     ArrayList<String> latiList;
     ArrayList<String> longList;
@@ -73,11 +75,13 @@ public class SearchActivity extends AppCompatActivity {
         databaseReference = FirebaseDatabase.getInstance().getReference();
 
         titleList = new ArrayList<>();
-        costList = new ArrayList<>();
+        costList2D = new ArrayList<ArrayList<String>>();
         bitmapList2D = new ArrayList<ArrayList<String>>();
-        descriptionList = new ArrayList<>();
+        descriptionList2D = new ArrayList<ArrayList<String>>();
         hashMap = new HashMap<>();
         bitmapList = new ArrayList<>();
+        descriptionList = new ArrayList<>();
+        costList = new ArrayList<>();
         latiList = new ArrayList<>();
         distanceList = new ArrayList<>();
         longList = new ArrayList<>();
@@ -103,14 +107,16 @@ public class SearchActivity extends AppCompatActivity {
                 }
                 else {
                     titleList.clear();
-                    costList.clear();
+                    costList2D.clear();
                     bitmapList.clear();
                     distanceList.clear();
-                    descriptionList.clear();
+                    descriptionList2D.clear();
                     latiList.clear();
                     uidList.clear();
                     longList.clear();
                     bitmapList2D.clear();
+                    costList.clear();
+                    descriptionList.clear();
                     resultList.removeAllViews();
                     hashMap.clear();
                 }
@@ -143,6 +149,8 @@ public class SearchActivity extends AppCompatActivity {
                 costList.clear();
                 bitmapList.clear();
                 descriptionList.clear();
+                descriptionList2D.clear();
+                costList2D.clear();
                 bitmapList2D.clear();
                 latiList.clear();
                 longList.clear();
@@ -153,26 +161,30 @@ public class SearchActivity extends AppCompatActivity {
 
                 for (DataSnapshot snapshot : dataSnapshot.getChildren()){
                     bitmapList = new ArrayList<>();
+                    descriptionList = new ArrayList<>();
+                    costList = new ArrayList<>();
                     String title = snapshot.child("Title").getValue(String.class);
-                    String cost = snapshot.child("Cost").getValue(String.class);
+//                    String cost = snapshot.child("Cost").getValue(String.class);
                     //String bitmap = snapshot.child("Bitmap").getValue(String.class);
-                    String description = snapshot.child("Description").getValue(String.class);
+//                    String description = snapshot.child("Description").getValue(String.class);
                     String longitude = snapshot.child("LocationLong").getValue(String.class);
                     String latitude = snapshot.child("LocationLati").getValue(String.class);
                     String id = snapshot.child("Id").getValue(String.class);
                     Integer totalImages = Integer.parseInt(snapshot.child("TotalImages").getValue().toString());
                     for (int i=0; i < totalImages; i++){
                         bitmapList.add(snapshot.child("Bitmap"+i).getValue().toString());
+                        descriptionList.add(snapshot.child("Description"+i).getValue().toString());
+                        costList.add(snapshot.child("Cost"+i).getValue().toString());
                     }
 
 
                     MarkerInfoSearch markerInfoSearch = new MarkerInfoSearch();
                     markerInfoSearch.setBitmapUrl(bitmapList);
                     markerInfoSearch.setTitle(title);
-                    markerInfoSearch.setDescription(description);
+                    markerInfoSearch.setDescriptionList(descriptionList);
                     markerInfoSearch.setLatitude(latitude);
                     markerInfoSearch.setLongitude(longitude);
-                    markerInfoSearch.setCost(cost);
+                    markerInfoSearch.setCostList(costList);
                     markerInfoSearch.setId(id);
                     markerInfoSearch.setTotalImages(totalImages);
 
@@ -193,37 +205,41 @@ public class SearchActivity extends AppCompatActivity {
                         Double distDouble = Double.parseDouble(dist);
                         distanceList.add(distDouble);
                         titleList.add(title);
-                        costList.add(cost);
+                        costList2D.add(costList);
                         bitmapList2D.add(bitmapList);
-                        descriptionList.add(description);
+                        descriptionList2D.add(descriptionList);
                         latiList.add(latitude);
                         longList.add(longitude);
                         uidList.add(id);
                         hashMap.put(id, markerInfoSearch);
                         counter++;
-                    }else if (description.toLowerCase().contains(searchedString.toLowerCase())){
-                        Location.distanceBetween(myLatitude, myLongitude, Double.parseDouble(latitude), Double.parseDouble(longitude), distance);
-                        double distMiles = (double) distance[0] * 0.000621371;
-                        String dist = new DecimalFormat("#.##").format(Double.valueOf(distMiles));
-                        Double distDouble = Double.parseDouble(dist);
-                        distanceList.add(distDouble);
-                        titleList.add(title);
-                        costList.add(cost);
-                        bitmapList2D.add(bitmapList);
-                        descriptionList.add(description);
-                        latiList.add(latitude);
-                        longList.add(longitude);
-                        uidList.add(id);
-                        hashMap.put(id, markerInfoSearch);
-                        counter++;
+                    }else{
+                        for(int i=0;i<totalImages;i++){
+                            String description = descriptionList.get(i);
+                            if (description.toLowerCase().contains(searchedString.toLowerCase())){
+                                Location.distanceBetween(myLatitude, myLongitude, Double.parseDouble(latitude), Double.parseDouble(longitude), distance);
+                                double distMiles = (double) distance[0] * 0.000621371;
+                                String dist = new DecimalFormat("#.##").format(Double.valueOf(distMiles));
+                                Double distDouble = Double.parseDouble(dist);
+                                distanceList.add(distDouble);
+                                titleList.add(title);
+                                costList2D.add(costList);
+                                bitmapList2D.add(bitmapList);
+                                descriptionList2D.add(descriptionList);
+                                latiList.add(latitude);
+                                longList.add(longitude);
+                                uidList.add(id);
+                                hashMap.put(id, markerInfoSearch);
+                                counter++;
+                                break;
+                            }
+                        }
                     }
-
-
                     if(counter == 15)
                         break;
                 }
 
-                searchAdapter = new SearchAdapter(SearchActivity.this, titleList, costList, bitmapList2D, descriptionList, uidList, latiList, longList, distanceList);
+                searchAdapter = new SearchAdapter(SearchActivity.this, titleList, costList2D, bitmapList2D, descriptionList2D, uidList, latiList, longList, distanceList);
                 resultList.setAdapter(searchAdapter);
 
             }

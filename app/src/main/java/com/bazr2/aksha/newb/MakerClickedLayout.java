@@ -58,6 +58,8 @@ public class MakerClickedLayout extends AppCompatActivity {
     String imageUrl;
     String id;
     ArrayList<String> bitmapUrl;
+    ArrayList<String> descriptionList;
+    ArrayList<String> costList;
     int totalImages;
     int current = 0;
     HashMap<String, String> storedImagePath = new HashMap<>();
@@ -93,13 +95,17 @@ public class MakerClickedLayout extends AppCompatActivity {
 
         firebaseAuth = FirebaseAuth.getInstance();
         eT.setText(getIntent().getStringExtra("Title").toString());
-        eTdes.setText(getIntent().getStringExtra("Description").toString());
-        eTcost.setText(getIntent().getStringExtra("Cost").toString());
         latitude = getIntent().getStringExtra("Latitude").toString();
         longitude = getIntent().getStringExtra("Longitude").toString();
         id = getIntent().getStringExtra("Id").toString();
         totalImages = getIntent().getIntExtra("TotalImages", 1);
         bitmapUrl = getIntent().getStringArrayListExtra("Bitmap");
+        descriptionList = getIntent().getStringArrayListExtra("Description");
+        costList = getIntent().getStringArrayListExtra("Cost");
+
+        eTdes.setText(descriptionList.get(0));
+        eTcost.setText(costList.get(0));
+
 
         storageReference = FirebaseStorage.getInstance().getReference(id);
         Picasso.with(getApplicationContext()).setIndicatorsEnabled(true);
@@ -122,8 +128,8 @@ public class MakerClickedLayout extends AppCompatActivity {
             public void onClick(View v) {
                 Intent intent = new Intent(getApplicationContext(), EditInfoActivity.class);
                 intent.putExtra("Name", eT.getText().toString());
-                intent.putExtra("Desc", eTdes.getText().toString());
-                intent.putExtra("Cost", eTcost.getText().toString());
+                intent.putStringArrayListExtra("Description", descriptionList);
+                intent.putStringArrayListExtra("Cost", costList);
                 intent.putStringArrayListExtra("BitmapURL", bitmapUrl);
                 intent.putExtra("Id", id);
                 finish();
@@ -187,10 +193,14 @@ public class MakerClickedLayout extends AppCompatActivity {
 //                    Toast.makeText(getApplicationContext(), "No More Images", Toast.LENGTH_SHORT).show();
                     current = 0;
                     Glide.with(getApplicationContext()).load(bitmapUrl.get(current)).into(imageView);
+                    eTdes.setText(descriptionList.get(current));
+                    eTcost.setText(costList.get(current));
                     return;
                 }
                 current++;
                 Glide.with(getApplicationContext()).load(bitmapUrl.get(current)).into(imageView);
+                eTdes.setText(descriptionList.get(current));
+                eTcost.setText(costList.get(current));
 
             }
         });
@@ -202,10 +212,14 @@ public class MakerClickedLayout extends AppCompatActivity {
 //                    Toast.makeText(getApplicationContext(), "No More Images", Toast.LENGTH_SHORT).show();
                     current = bitmapUrl.size()-1;
                     Glide.with(getApplicationContext()).load(bitmapUrl.get(current)).into(imageView);
+                    eTdes.setText(descriptionList.get(current));
+                    eTcost.setText(costList.get(current));
                     return;
                 }
                 current--;
                 Glide.with(getApplicationContext()).load(bitmapUrl.get(current)).into(imageView);
+                eTdes.setText(descriptionList.get(current));
+                eTcost.setText(costList.get(current));
 
             }
         });

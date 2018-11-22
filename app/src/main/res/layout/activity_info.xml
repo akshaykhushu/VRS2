@@ -109,6 +109,18 @@
             android:onClick="Upload"
             android:text="Upload" />
 
+        <Button
+            android:id="@+id/buttonSave"
+            android:layout_width="0dp"
+            android:layout_weight="2"
+            android:layout_height="match_parent"
+            android:background="@android:color/holo_orange_dark"
+            android:textColor="@android:color/white"
+            android:layout_marginLeft="2dp"
+            android:layout_marginRight="2dp"
+            android:layout_marginBottom="2dp"
+            android:text="Save" />
+
         <ImageButton
             android:id="@+id/buttonMoreImages"
             android:layout_width="0dp"

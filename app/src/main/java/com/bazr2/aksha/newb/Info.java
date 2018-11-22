@@ -82,7 +82,14 @@ public class Info extends AppCompatActivity {
     Double longitude;
     Double latitude;
     DatabaseReference databaseReference;
+    ArrayList<String> descriptionList = new ArrayList<>();
+    ArrayList<String> costList = new ArrayList<>();
     EditText eT;
+    int imgLoc =0;
+    Button saveButton;
+
+    EditText eTdes;
+    EditText eTcost;
 
 
     private final LocationListener locationListener = new LocationListener() {
@@ -115,25 +122,34 @@ public class Info extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_info);
-        imageStr = Environment.getExternalStorageDirectory() + "/test/testfile.jpg";
+        imageStr = Environment.getExternalStorageDirectory() + "/bazr/testfile.jpg";
         File actualImage = new File(imageStr);
-        File compressedImageFile = null;
+        File compressedImageFile=null;
         try {
             compressedImageFile = new Compressor(this).compressToFile(actualImage);
         } catch (IOException e) {
             e.printStackTrace();
         }
+
+        saveButton = findViewById(R.id.buttonSave);
+        eT = findViewById(R.id.nameEditText);
+        eTdes = findViewById(R.id.editTextDescription);
+        eTcost = findViewById(R.id.editTextCost);
         imageUri = Uri.parse(imageStr);
-        bitmap = BitmapFactory.decodeFile(imageStr);
         imageView = findViewById(R.id.imageView);
-        imageView.setImageBitmap(bitmap);
+        final BitmapFactory.Options options = new BitmapFactory.Options();
+        options.inSampleSize = 8;
+
+        Bitmap bm = BitmapFactory.decodeFile(imageStr,options);
+        imageView.setImageBitmap(bm);
+
 //        Glide.with(getApplicationContext()).load(downloadUrl.get(0)).into(imageView);
         eT = findViewById(R.id.nameEditText);
 
-        databaseReference = FirebaseDatabase.getInstance().getReference(MapsActivity.UserId);
+
         try {
 
-
+            databaseReference = FirebaseDatabase.getInstance().getReference(MapsActivity.UserId);
             databaseReference.addValueEventListener(new ValueEventListener() {
                 @Override
                 public void onDataChange(DataSnapshot dataSnapshot) {
@@ -175,13 +191,25 @@ public class Info extends AppCompatActivity {
         addImages.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                String filename = Environment.getExternalStorageDirectory().getPath() + "/test/testfile.jpg";
+                String filename = Environment.getExternalStorageDirectory().getPath() + "/bazr/testfile.jpg";
                 File file =  new File(filename);
+                if (TextUtils.isEmpty(eT.getText().toString()) || TextUtils.isEmpty((eT.getText().toString().trim()))){
+                    Toast.makeText(getApplicationContext(), "Name is a required Field", Toast.LENGTH_SHORT).show();
+                    return;
+                }
+                if (TextUtils.isEmpty(eTdes.getText().toString()) || TextUtils.isEmpty((eT.getText().toString().trim()))){
+                    Toast.makeText(getApplicationContext(), "Description is a required Field", Toast.LENGTH_SHORT).show();
+                    return;
+                }
+                if (TextUtils.isEmpty(eTcost.getText().toString()) || TextUtils.isEmpty((eT.getText().toString().trim()))){
+                    Toast.makeText(getApplicationContext(), "Cost is a required Field", Toast.LENGTH_SHORT).show();
+                    return;
+                }
+
                 imageUri = FileProvider.getUriForFile(getApplicationContext(),"com.bazr2.android.fileprovider", file );
                 Intent cameraIntent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
                 cameraIntent.putExtra(android.provider.MediaStore.EXTRA_OUTPUT, imageUri);
                 startActivityForResult(cameraIntent, 123);
-
 
             }
         });
@@ -189,18 +217,20 @@ public class Info extends AppCompatActivity {
         buttonNext = findViewById(R.id.buttonNext);
         buttonPrevious = findViewById(R.id.buttonPrevious);
 
-
         buttonNext.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 if (current >= downloadUrl.size() - 1) {
-//                    Toast.makeText(getApplicationContext(), "No More Images", Toast.LENGTH_SHORT).show();
                     current = 0;
                     Glide.with(getApplicationContext()).load(downloadUrl.get(current)).into(imageView);
+                    eTdes.setText(descriptionList.get(current));
+                    eTcost.setText(costList.get(current));
                     return;
                 }
                 current++;
                 Glide.with(getApplicationContext()).load(downloadUrl.get(current)).into(imageView);
+                eTdes.setText(descriptionList.get(current));
+                eTcost.setText(costList.get(current));
 
             }
         });
@@ -209,16 +239,18 @@ public class Info extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 if (current <= 0) {
-//                    Toast.makeText(getApplicationContext(), "No More Images", Toast.LENGTH_SHORT).show();
                     current = downloadUrl.size()-1;
                     Glide.with(getApplicationContext()).load(downloadUrl.get(current)).into(imageView);
+                    eTdes.setText(descriptionList.get(current));
+                    eTcost.setText(costList.get(current));
                     return;
                 }
                 current--;
                 Glide.with(getApplicationContext()).load(downloadUrl.get(current)).into(imageView);
+                eTdes.setText(descriptionList.get(current));
+                eTcost.setText(costList.get(current));
             }
         });
-
 
 
 
@@ -248,7 +280,27 @@ public class Info extends AppCompatActivity {
             }
         });
 
+        saveButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if(eTdes.getText().toString() == "" || eTdes.getText().toString() == null ){
+                    Toast.makeText(getApplicationContext(), "Please Enter Description", Toast.LENGTH_SHORT).show();
+                    return;
+                }
+                if(eTcost.getText().toString() == "" || eTcost.getText().toString() == null ){
+                    Toast.makeText(getApplicationContext(), "Please Enter Cost", Toast.LENGTH_SHORT).show();
+                    return;
+                }
+                    descriptionList.add(imgLoc, eTdes.getText().toString());
+                    costList.add(imgLoc,eTcost.getText().toString());
+                    Toast.makeText(getApplicationContext(), "Saved", Toast.LENGTH_SHORT).show();
+                    imgLoc++;
+            }
+        });
+
     }
+
+
 
 
     @Override
@@ -257,7 +309,7 @@ public class Info extends AppCompatActivity {
 
         try {
             if (resultCode == RESULT_OK) {
-                imageStr = Environment.getExternalStorageDirectory() + "/test/testfile.jpg";
+                imageStr = Environment.getExternalStorageDirectory() + "/bazr/testfile.jpg";
                 File actualImage = new File(imageStr);
                 File compressedImageFile = null;
                 try {
@@ -271,6 +323,8 @@ public class Info extends AppCompatActivity {
                 progressDialog.setTitle("Please Wait");
                 progressDialog.setMessage("Loading");
                 progressDialog.setCancelable(false);
+                eTcost.setText("");
+                eTdes.setText("");
                 progressDialog.show();
                 Uri file = Uri.fromFile(compressedImageFile);
                 fileRef.putFile(file).addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
@@ -280,7 +334,6 @@ public class Info extends AppCompatActivity {
                         while(!urlTask.isSuccessful());
                         Uri downloadURL = urlTask.getResult();
                         downloadUrl.add(Uri.parse(downloadURL.toString()));
-//                        Picasso.with(getApplicationContext()).load(taskSnapshot.getDownloadUrl()).into(imageView);
                         Glide.with(getApplicationContext()).load(downloadURL.toString()).into(imageView);
                         progressDialog.dismiss();
                     }
@@ -312,9 +365,6 @@ public class Info extends AppCompatActivity {
             }, 200);
             return;
         }
-        eT = findViewById(R.id.nameEditText);
-        EditText eTdes = findViewById(R.id.editTextDescription);
-        EditText eTcost = findViewById(R.id.editTextCost);
         Spinner spinner = findViewById(R.id.spinnerCurrency);
         String text = spinner.getSelectedItem().toString();
 
@@ -353,12 +403,13 @@ public class Info extends AppCompatActivity {
         databaseReference.child("TotalImages").setValue(String.valueOf(downloadUrl.size()));
         for (int i=0;i<downloadUrl.size();i++){
             databaseReference.child("Bitmap"+i).setValue(downloadUrl.get(i).toString());
+            databaseReference.child("Description"+i).setValue(descriptionList.get(i));
+            databaseReference.child("Cost"+i).setValue(costList.get(i));
         }
         databaseReference.child("LocationLong").setValue(String.valueOf(longitude));
         databaseReference.child("LocationLati").setValue(String.valueOf(latitude));
         databaseReference.child("Title").setValue(eT.getText().toString());
-        databaseReference.child("Description").setValue(eTdes.getText().toString());
-        databaseReference.child("Cost").setValue(text + eTcost.getText().toString());
+
         databaseReference.child("Id").setValue(firebaseAuth1.getCurrentUser().getUid());
         MapsActivity.upload = 1;
         Intent intent = new Intent(this, MapsActivity.class);

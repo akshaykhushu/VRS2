@@ -136,8 +136,8 @@ public class MapsActivitySearch extends FragmentActivity implements OnMapReadyCa
                 Intent intent = new Intent(getApplicationContext(), MakerClickedLayout.class);
                 intent.putStringArrayListExtra("Bitmap", markerInfoSearch.getBitmapUrl());
                 intent.putExtra("Title", markerInfoSearch.getTitle());
-                intent.putExtra("Description", markerInfoSearch.getDescription());
-                intent.putExtra("Cost", markerInfoSearch.getCost());
+                intent.putStringArrayListExtra("Description", markerInfoSearch.getDescriptionList());
+                intent.putStringArrayListExtra("Cost", markerInfoSearch.getCostList());
                 intent.putExtra("Latitude", markerInfoSearch.getLatitude());
                 intent.putExtra("Longitude", markerInfoSearch.getLongitude());
                 intent.putExtra("TotalImages", markerInfoSearch.getTotalImages());
@@ -158,27 +158,5 @@ public class MapsActivitySearch extends FragmentActivity implements OnMapReadyCa
                 return true;
             }
         });
-
-//        mMap.setOnMarkerClickListener(new GoogleMap.OnMarkerClickListener() {
-//            @Override
-//            public boolean onMarkerClick(Marker marker) {
-//                String idMarker = marker.getTitle();
-//                for (String id : SearchActivity.hashMap.keySet()) {
-//                    if (id.equals(idMarker)) {
-//                        Intent intent = new Intent(getApplicationContext(), MakerClickedLayout.class);
-//                        intent.putStringArrayListExtra("Bitmap", SearchActivity.hashMap.get(id).getBitmapUrl());
-//                        intent.putExtra("Title", SearchActivity.hashMap.get(id).getTitle());
-//                        intent.putExtra("Description", SearchActivity.hashMap.get(id).getDescription());
-//                        intent.putExtra("Cost", SearchActivity.hashMap.get(id).getCost());
-//                        intent.putExtra("Latitude", SearchActivity.hashMap.get(id).getLatitude());
-//                        intent.putExtra("Longitude", SearchActivity.hashMap.get(id).getLongitude());
-//                        intent.putExtra("TotalImages", SearchActivity.hashMap.get(id).getTotalImages());
-//                        intent.putExtra("Id", SearchActivity.hashMap.get(id).getId());
-//                        startActivity(intent);
-//                    }
-//                }
-//                return true;
-//            }
-//        });
     }
 }

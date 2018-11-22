@@ -9,8 +9,8 @@ import java.util.ArrayList;
 
 public class MarkerInfoSearch implements ClusterItem {
     ArrayList<String> bitmapUrl;
-    String cost;
-    String description;
+    ArrayList<String> costList;
+    ArrayList<String> descriptionList;
     String longitude;
     String latitude;
     String id;
@@ -60,20 +60,20 @@ public class MarkerInfoSearch implements ClusterItem {
         this.bitmapUrl = bitmapUrl;
     }
 
-    public String getCost() {
-        return cost;
+    public ArrayList<String> getCostList() {
+        return costList;
     }
 
-    public void setCost(String cost) {
-        this.cost = cost;
+    public void setCostList(ArrayList<String> costList) {
+        this.costList = costList;
     }
 
-    public String getDescription() {
-        return description;
+    public ArrayList<String> getDescriptionList() {
+        return descriptionList;
     }
 
-    public void setDescription(String description) {
-        this.description = description;
+    public void setDescriptionList(ArrayList<String> descriptionList) {
+        this.descriptionList = descriptionList;
     }
 
     public String getLongitude() {

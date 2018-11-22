@@ -27,10 +27,10 @@ public class SearchAdapter extends RecyclerView.Adapter<SearchAdapter.SearchView
 
     Context context;
     ArrayList<String> titleList;
-    ArrayList<String> costList;
+    ArrayList<ArrayList<String>> costList2D;
     ArrayList<ArrayList<String>> bitmapList2D;
     ArrayList<String> bitmapList;
-    ArrayList<String> descriptionList;
+    ArrayList<ArrayList<String>> descriptionList2D;
     ArrayList<String> uidList;
     ArrayList<String> latiList;
     ArrayList<Double> distanceList;
@@ -55,12 +55,12 @@ public class SearchAdapter extends RecyclerView.Adapter<SearchAdapter.SearchView
         }
     }
 
-    public SearchAdapter(Context context, ArrayList<String> titleList, ArrayList<String> costList, ArrayList<ArrayList<String>> bitmapList2D, ArrayList<String> descriptionList, ArrayList<String> uidList, ArrayList<String> latiList, ArrayList<String> longList, ArrayList<Double> distanceList ) {
+    public SearchAdapter(Context context, ArrayList<String> titleList, ArrayList<ArrayList<String>> costList2D, ArrayList<ArrayList<String>> bitmapList2D, ArrayList<ArrayList<String>> descriptionList2D, ArrayList<String> uidList, ArrayList<String> latiList, ArrayList<String> longList, ArrayList<Double> distanceList ) {
         this.context = context;
         this.titleList = titleList;
-        this.costList = costList;
+        this.costList2D = costList2D;
         this.bitmapList2D = bitmapList2D;
-        this.descriptionList = descriptionList;
+        this.descriptionList2D = descriptionList2D;
         this.uidList = uidList;
         this.latiList = latiList;
         this.longList = longList;
@@ -72,8 +72,8 @@ public class SearchAdapter extends RecyclerView.Adapter<SearchAdapter.SearchView
                     if (distanceList.get(i) > distanceList.get(j)) {
                         double tempNum = distanceList.get(i);
                         String tempTitle = titleList.get(i);
-                        String tempCost = costList.get(i);
-                        String tempDescription = descriptionList.get(i);
+                        ArrayList<String> tempCostList = costList2D.get(i);
+                        ArrayList<String> tempDescriptionList = descriptionList2D.get(i);
                         String tempUid = uidList.get(i);
                         String templati = latiList.get(i);
                         ArrayList<String> tempArrayList = bitmapList2D.get(i);
@@ -81,16 +81,16 @@ public class SearchAdapter extends RecyclerView.Adapter<SearchAdapter.SearchView
 
                         distanceList.add(i, distanceList.get(j));
                         titleList.add(i, titleList.get(j));
-                        costList.add(i, costList.get(j));
-                        descriptionList.add(i, descriptionList.get(j));
+                        costList2D.add(i, costList2D.get(j));
+                        descriptionList2D.add(i, descriptionList2D.get(j));
                         uidList.add(i, uidList.get(j));
                         latiList.add(i, latiList.get(j));
                         longList.add(i, longList.get(j));
                         bitmapList2D.add(i, bitmapList2D.get(j));
                         distanceList.remove(i + 1);
                         titleList.remove(i + 1);
-                        costList.remove(i + 1);
-                        descriptionList.remove(i + 1);
+                        costList2D.remove(i + 1);
+                        descriptionList2D.remove(i + 1);
                         uidList.remove(i + 1);
                         latiList.remove(i + 1);
                         longList.remove(i + 1);
@@ -99,16 +99,16 @@ public class SearchAdapter extends RecyclerView.Adapter<SearchAdapter.SearchView
 
                         distanceList.add(j, tempNum);
                         titleList.add(j, tempTitle);
-                        descriptionList.add(j, tempDescription);
-                        costList.add(j, tempCost);
+                        descriptionList2D.add(j, tempDescriptionList);
+                        costList2D.add(j, tempCostList);
                         uidList.add(j, tempUid);
                         latiList.add(j, templati);
                         longList.add(j, templong);
                         bitmapList2D.add(j, tempArrayList);
                         distanceList.remove(j + 1);
                         titleList.remove(j + 1);
-                        costList.remove(j + 1);
-                        descriptionList.remove(j + 1);
+                        costList2D.remove(j + 1);
+                        descriptionList2D.remove(j + 1);
                         uidList.remove(j + 1);
                         latiList.remove(j + 1);
                         longList.remove(j + 1);
@@ -156,7 +156,7 @@ public class SearchAdapter extends RecyclerView.Adapter<SearchAdapter.SearchView
 //            Picasso.with(ListActivity.this).load(Uri.parse(listItems.get(position).getBitmapUrl().get(0))).into(imageView);
 //        holder.textViewDistance.setText(" | "+ dist + " Mi");
         holder.textViewName.setText(titleList.get(position));
-        holder.textViewCost.setText(costList.get(position)+ " | " + dist + " Mi");
+        holder.textViewCost.setText(costList2D.get(position).get(0)+ " | " + dist + " Mi");
 
         Glide.with(context).load(bitmapList2D.get(position).get(0)).into(holder.imageView);
 //        Picasso.with(context).load(bitmapList2D.get(position).get(0)).into(holder.imageView);
@@ -166,8 +166,8 @@ public class SearchAdapter extends RecyclerView.Adapter<SearchAdapter.SearchView
             public void onClick(View v) {
                 Intent intent = new Intent(holder.itemView.getContext(), MakerClickedLayout.class);
                 intent.putExtra("Title", titleList.get(position));
-                intent.putExtra("Cost", costList.get(position));
-                intent.putExtra("Description", descriptionList.get(position));
+                intent.putExtra("Cost", costList2D.get(position));
+                intent.putExtra("Description", descriptionList2D.get(position));
                 //intent.putExtra("Bitmap", bitmapList.get(position));
                 intent.putStringArrayListExtra("Bitmap", bitmapList2D.get(position));
                 intent.putExtra("Latitude", latiList.get(position));

@@ -67,18 +67,18 @@
         android:layout_alignParentBottom="true"
         android:layout_centerHorizontal="true"
         android:layout_marginBottom="184dp"
-        android:text="Or Sign In With"
+        android:text="or:"
         android:textColor="@android:color/holo_orange_dark" />
 
     <ImageButton
         android:id="@+id/imageButtonGoogleSignIn"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
+        android:layout_width="match_parent"
+        android:layout_height="77dp"
         android:layout_alignParentBottom="true"
         android:layout_centerHorizontal="true"
-        android:layout_marginBottom="127dp"
+        android:layout_marginBottom="110dp"
         android:background="@android:color/transparent"
-        app:srcCompat="@drawable/common_google_signin_btn_icon_dark_normal" />
+        app:srcCompat="@drawable/signwithgoogle" />
 
     <TextView
         android:id="@+id/textView3"

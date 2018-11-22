@@ -42,7 +42,7 @@ public  class ClusterRenderer<T extends ClusterItem> extends DefaultClusterRende
             IconGenerator iconGenerator = new IconGenerator(context);
             iconGenerator.setStyle(IconGenerator.STYLE_ORANGE);
             iconGenerator.setTextAppearance(R.style.iconGenText);
-            Bitmap iconBitmap = iconGenerator.makeIcon(markerInfo.getTitle() + " | " + markerInfo.getCost());
+            Bitmap iconBitmap = iconGenerator.makeIcon(markerInfo.getTitle() + " | " + markerInfo.getCostList().get(0));
 //        BitmapDescriptor bitmapDescriptor = BitmapDescriptorFactory.fromBitmap(iconBitmap);
             markerOptions.icon(BitmapDescriptorFactory.fromBitmap(iconBitmap));
         }catch(ClassCastException e){
@@ -50,7 +50,7 @@ public  class ClusterRenderer<T extends ClusterItem> extends DefaultClusterRende
             IconGenerator iconGenerator = new IconGenerator(context);
             iconGenerator.setStyle(IconGenerator.STYLE_ORANGE);
             iconGenerator.setTextAppearance(R.style.iconGenText);
-            Bitmap iconBitmap = iconGenerator.makeIcon(markerInfo.getTitle() + " | " + markerInfo.getCost());
+            Bitmap iconBitmap = iconGenerator.makeIcon(markerInfo.getTitle() + " | " + markerInfo.getCostList().get(0));
 //        BitmapDescriptor bitmapDescriptor = BitmapDescriptorFactory.fromBitmap(iconBitmap);
             markerOptions.icon(BitmapDescriptorFactory.fromBitmap(iconBitmap));
         }

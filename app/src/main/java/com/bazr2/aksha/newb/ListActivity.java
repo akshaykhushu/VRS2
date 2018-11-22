@@ -133,8 +133,8 @@ public class ListActivity extends AppCompatActivity {
                 Intent intent = new Intent(getApplicationContext(), MakerClickedLayout.class);
                 intent.putStringArrayListExtra("Bitmap", listItems.get(position).getBitmapUrl());
                 intent.putExtra("Title",listItems.get(position).getTitle());
-                intent.putExtra("Description", listItems.get(position).getDescription());
-                intent.putExtra("Cost",listItems.get(position).getCost());
+                intent.putExtra("Description", listItems.get(position).getDescriptionList());
+                intent.putExtra("Cost",listItems.get(position).getCostList());
                 intent.putExtra("Longitude", listItems.get(position).getLongitude());
                 intent.putExtra("Latitude", listItems.get(position).getLatitude());
                 intent.putExtra("Id", listItems.get(position).getId());
@@ -189,7 +189,7 @@ public class ListActivity extends AppCompatActivity {
 //            Picasso.with(ListActivity.this).load(Uri.parse(listItems.get(position).getBitmapUrl().get(0))).into(imageView);
 //            textViewDistance.setText(" | " + dist + " Mi");
             textViewName.setText(listItems.get(position).getTitle());
-            textViewCost.setText(listItems.get(position).getCost() + " | " + dist + "Mi");
+            textViewCost.setText(listItems.get(position).getCostList().get(0) + " | " + dist + "Mi");
             return view;
         }
     }

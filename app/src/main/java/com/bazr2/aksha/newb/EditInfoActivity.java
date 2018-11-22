@@ -50,6 +50,8 @@ public class EditInfoActivity extends AppCompatActivity {
     EditText costEdit;
     EditText descEdit;
     ArrayList<String> bitmapUrl;
+    ArrayList<String> descriptionList;
+    ArrayList<String> costList;
     ArrayList<Uri> downloadUrl;
     ImageView imageView;
     Button updateButton;
@@ -58,6 +60,7 @@ public class EditInfoActivity extends AppCompatActivity {
     ImageButton nextImageButton;
     ImageButton prevImageButton;
     int current = 0;
+    int imgLoc = 0;
     Uri imageUri;
     DatabaseReference databaseReference;
     StorageReference storageReference;
@@ -70,6 +73,7 @@ public class EditInfoActivity extends AppCompatActivity {
     Spinner currencySelectEdit;
     FloatingActionButton deleteImageButton;
     String id;
+    Button saveEditButton;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -79,6 +83,7 @@ public class EditInfoActivity extends AppCompatActivity {
         costEdit = findViewById(R.id.editTextCostEdit);
         descEdit = findViewById(R.id.editTextDescriptionEdit);
         current=0;
+        saveEditButton = findViewById(R.id.buttonSaveEdit);
         bitmapUrl = new ArrayList<>();
         imageView = findViewById(R.id.imageViewEdit);
         updateButton = findViewById(R.id.buttonUpdateEdit);
@@ -92,10 +97,11 @@ public class EditInfoActivity extends AppCompatActivity {
         firebaseDatabase = FirebaseDatabase.getInstance();
 
         nameEdit.setText(getIntent().getStringExtra("Name"));
-        String cost = getIntent().getStringExtra("Cost");
-        cost = cost.substring(1);
+        costList = getIntent().getStringArrayListExtra("Cost");
+        final String cost = costList.get(0).substring(1);
         costEdit.setText(cost);
-        descEdit.setText(getIntent().getStringExtra("Desc"));
+        descriptionList = getIntent().getStringArrayListExtra("Description");
+        descEdit.setText(descriptionList.get(0));
         bitmapUrl = getIntent().getStringArrayListExtra("BitmapURL");
         id = getIntent().getStringExtra("Id");
 
@@ -118,6 +124,8 @@ public class EditInfoActivity extends AppCompatActivity {
             public void onClick(View v) {
                 downloadUrl.remove(current);
                 bitmapUrl.remove(current);
+                descriptionList.remove(current);
+                costList.remove(current);
                 try{
                     nextImage();
                 }
@@ -143,10 +151,14 @@ public class EditInfoActivity extends AppCompatActivity {
                 if (current <= 0) {
                     current = downloadUrl.size()-1;
                     Glide.with(getApplicationContext()).load(downloadUrl.get(current)).into(imageView);
+                    descEdit.setText(descriptionList.get(current));
+                    costEdit.setText(costList.get(current));
                     return;
                 }
                 current--;
                 Glide.with(getApplicationContext()).load(downloadUrl.get(current)).into(imageView);
+                descEdit.setText(descriptionList.get(current));
+                costEdit.setText(costList.get(current));
             }
         });
 
@@ -160,12 +172,41 @@ public class EditInfoActivity extends AppCompatActivity {
         imageButtonMoreImages.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                String filename = Environment.getExternalStorageDirectory().getPath() + "/test/testfile.jpg";
+                if (TextUtils.isEmpty(nameEdit.getText().toString()) || TextUtils.isEmpty((nameEdit.getText().toString().trim()))){
+                    Toast.makeText(getApplicationContext(), "Name is a required Field", Toast.LENGTH_SHORT).show();
+                    return;
+                }
+                if (TextUtils.isEmpty(descEdit.getText().toString()) || TextUtils.isEmpty((descEdit.getText().toString().trim()))){
+                    Toast.makeText(getApplicationContext(), "Enter Description for this image before taking another picture", Toast.LENGTH_LONG).show();
+                    return;
+                }
+                if (TextUtils.isEmpty(costEdit.getText().toString()) || TextUtils.isEmpty((costEdit.getText().toString().trim()))){
+                    Toast.makeText(getApplicationContext(), "Enter Cost for this image before taking another picture", Toast.LENGTH_SHORT).show();
+                    return;
+                }
+                String filename = Environment.getExternalStorageDirectory().getPath() + "/bazr/testfile.jpg";
                 File file =  new File(filename);
                 imageUri = FileProvider.getUriForFile(getApplicationContext(),"com.bazr2.android.fileprovider", file );
                 Intent cameraIntent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
                 cameraIntent.putExtra(android.provider.MediaStore.EXTRA_OUTPUT, imageUri);
                 startActivityForResult(cameraIntent, 123);
+            }
+        });
+
+        saveEditButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if(descEdit.getText().toString() == "" || descEdit.getText().toString() == null ){
+                    Toast.makeText(getApplicationContext(), "Please Enter Description", Toast.LENGTH_SHORT).show();
+                    return;
+                }
+                if(costEdit.getText().toString() == "" || costEdit.getText().toString() == null ){
+                    Toast.makeText(getApplicationContext(), "Please Enter Cost", Toast.LENGTH_SHORT).show();
+                    return;
+                }
+                descriptionList.add(descEdit.getText().toString());
+                costList.add(costEdit.getText().toString());
+                Toast.makeText(getApplicationContext(), "Saved", Toast.LENGTH_SHORT).show();
             }
         });
 
@@ -219,26 +260,14 @@ public class EditInfoActivity extends AppCompatActivity {
                 databaseReference.child("TotalImages").setValue(String.valueOf(downloadUrl.size()));
                 for (int i=0;i<downloadUrl.size();i++){
                     databaseReference.child("Bitmap"+i).setValue(downloadUrl.get(i).toString());
+                    databaseReference.child("Description"+i).setValue(descriptionList.get(i).toString());
+                    databaseReference.child("Cost"+i).setValue(costList.get(i).toString());
                 }
                 databaseReference.child("LocationLong").setValue(String.valueOf(longitude));
                 databaseReference.child("LocationLati").setValue(String.valueOf(latitude));
                 databaseReference.child("Title").setValue(nameEdit.getText().toString());
-                databaseReference.child("Description").setValue(descEdit.getText().toString());
-                databaseReference.child("Cost").setValue(text + costEdit.getText().toString());
                 databaseReference.child("Id").setValue(id);
                 MapsActivity.upload = 1;
-//                MapsActivity.mClusterManager.removeItem(MapsActivity.markerInfoMap.get(id));
-//                MapsActivity.mClusterManager.cluster();
-//                MapsActivity.markerInfoMap.clear();
-
-//                MapsActivity.mMap.clear();
-//                MapsActivity.mClusterManager.clearItems();
-//                MapsActivity.mClusterManager.cluster();
-//                MapsActivity.markerInfoMap.clear();
-//                MapsActivity.mClusterManager.clearItems();
-//                MapsActivity.mClusterManager.cluster();
-//                MapsActivity.mClusterManager.addItems(MapsActivity.markerInfoMap.values());
-//                MapsActivity.mClusterManager.cluster();
 
                 finish();
                 Intent intent = new Intent(getApplicationContext(), MapsActivity.class);
@@ -262,13 +291,16 @@ public class EditInfoActivity extends AppCompatActivity {
 
     public void nextImage(){
         if (current >= downloadUrl.size() - 1) {
-//                    Toast.makeText(getApplicationContext(), "No More Images", Toast.LENGTH_SHORT).show();
             current = 0;
             Glide.with(getApplicationContext()).load(downloadUrl.get(current)).into(imageView);
+            descEdit.setText(descriptionList.get(current));
+            costEdit.setText(costList.get(current));
             return;
         }
         current++;
         Glide.with(getApplicationContext()).load(downloadUrl.get(current)).into(imageView);
+        descEdit.setText(descriptionList.get(current));
+        costEdit.setText(costList.get(current));
     }
 
 
@@ -280,7 +312,9 @@ public class EditInfoActivity extends AppCompatActivity {
 
                 disableDelete();
 
-                imageStr = Environment.getExternalStorageDirectory() + "/test/testfile.jpg";
+                descEdit.setText("");
+                costEdit.setText("");
+                imageStr = Environment.getExternalStorageDirectory() + "/bazr/testfile.jpg";
                 File actualImage = new File(imageStr);
                 File compressedImageFile = null;
                 try {
@@ -303,7 +337,6 @@ public class EditInfoActivity extends AppCompatActivity {
                         while(!urlTask.isSuccessful());
                         Uri downloadURL = urlTask.getResult();
                         downloadUrl.add(Uri.parse(downloadURL.toString()));
-//                        Picasso.with(getApplicationContext()).load(taskSnapshot.getDownloadUrl()).into(imageView);
                         Glide.with(getApplicationContext()).load(downloadURL.toString()).into(imageView);
                         progressDialog.dismiss();
                     }
