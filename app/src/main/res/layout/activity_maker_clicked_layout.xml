@@ -109,7 +109,6 @@
                     android:ems="10"
                     android:enabled="false"
                     android:focusable="false"
-                    android:fontFamily="cursive"
                     android:text="Description"
                     android:textColor="@android:color/black" />
 

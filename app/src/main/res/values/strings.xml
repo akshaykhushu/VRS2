@@ -1,5 +1,5 @@
 <resources>
-    <string name="app_name">Bazr</string>
+    <string name="app_name">Baazr</string>
     <string name="title_activity_maps">Map</string>
 
     <string-array name="currency">

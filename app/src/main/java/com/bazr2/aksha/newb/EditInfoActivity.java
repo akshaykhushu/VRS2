@@ -75,6 +75,10 @@ public class EditInfoActivity extends AppCompatActivity {
     String id;
     Button saveEditButton;
 
+    boolean saveEnabled = true;
+
+    boolean uploadEnabled= false;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -104,6 +108,7 @@ public class EditInfoActivity extends AppCompatActivity {
         descEdit.setText(descriptionList.get(0));
         bitmapUrl = getIntent().getStringArrayListExtra("BitmapURL");
         id = getIntent().getStringExtra("Id");
+        imgLoc = descriptionList.size();
 
 
         firebaseAuth = FirebaseAuth.getInstance();
@@ -115,7 +120,6 @@ public class EditInfoActivity extends AppCompatActivity {
         }
 
         disableDelete();
-
 
         Glide.with(getApplicationContext()).load(bitmapUrl.get(0)).into(imageView);
 
@@ -184,11 +188,19 @@ public class EditInfoActivity extends AppCompatActivity {
                     Toast.makeText(getApplicationContext(), "Enter Cost for this image before taking another picture", Toast.LENGTH_SHORT).show();
                     return;
                 }
+
+                if(uploadEnabled != true){
+                    Toast.makeText(getApplicationContext(), "You need to save before you can add more images", Toast.LENGTH_SHORT).show();
+                    return;
+                }
                 String filename = Environment.getExternalStorageDirectory().getPath() + "/bazr/testfile.jpg";
                 File file =  new File(filename);
                 imageUri = FileProvider.getUriForFile(getApplicationContext(),"com.bazr2.android.fileprovider", file );
                 Intent cameraIntent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
                 cameraIntent.putExtra(android.provider.MediaStore.EXTRA_OUTPUT, imageUri);
+
+                uploadEnabled=false;
+                saveEnabled=true;
                 startActivityForResult(cameraIntent, 123);
             }
         });
@@ -196,6 +208,11 @@ public class EditInfoActivity extends AppCompatActivity {
         saveEditButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+
+                if (saveEnabled != true){
+                    Toast.makeText(getApplicationContext(), "Already Saved", Toast.LENGTH_SHORT).show();
+                    return;
+                }
                 if(descEdit.getText().toString() == "" || descEdit.getText().toString() == null ){
                     Toast.makeText(getApplicationContext(), "Please Enter Description", Toast.LENGTH_SHORT).show();
                     return;
@@ -207,6 +224,13 @@ public class EditInfoActivity extends AppCompatActivity {
                 descriptionList.add(descEdit.getText().toString());
                 costList.add(costEdit.getText().toString());
                 Toast.makeText(getApplicationContext(), "Saved", Toast.LENGTH_SHORT).show();
+                imgLoc++;
+                saveEnabled =false;
+
+//                uploadButton.setEnabled(true);
+//                uploadButton.setActivated(true);
+//                uploadButton.setClickable(true);
+                uploadEnabled=true;
             }
         });
 
@@ -220,6 +244,12 @@ public class EditInfoActivity extends AppCompatActivity {
                     }, 200);
                     return;
                 }
+
+                if(uploadEnabled != true){
+                    Toast.makeText(getApplicationContext(), "You need to save before you can post", Toast.LENGTH_SHORT).show();
+                    return;
+                }
+
                 String text = currencySelectEdit.getSelectedItem().toString();
 
                 GPSTracker tracker = new GPSTracker(getApplicationContext());

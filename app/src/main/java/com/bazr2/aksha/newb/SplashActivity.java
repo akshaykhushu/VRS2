@@ -22,11 +22,11 @@ public class SplashActivity extends AppCompatActivity {
         setContentView(R.layout.activity_splash);
         textView = findViewById(R.id.textView5);
 
-        fromBottom = AnimationUtils.loadAnimation(this, R.anim.frombottom);
-        fromBottom.setDuration(2000);
+//        fromBottom = AnimationUtils.loadAnimation(this, R.anim.frombottom);
+//        fromBottom.setDuration(3000);
 
 //        imageView.setAnimation(fromBottom);
-        textView.setAnimation(fromBottom);
+//        textView.setAnimation(fromBottom);
         new Handler().postDelayed(new Runnable() {
             @Override
             public void run() {

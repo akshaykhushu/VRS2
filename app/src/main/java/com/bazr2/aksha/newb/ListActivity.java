@@ -188,7 +188,15 @@ public class ListActivity extends AppCompatActivity {
 //            }
 //            Picasso.with(ListActivity.this).load(Uri.parse(listItems.get(position).getBitmapUrl().get(0))).into(imageView);
 //            textViewDistance.setText(" | " + dist + " Mi");
-            textViewName.setText(listItems.get(position).getTitle());
+            if (listItems.get(position).getTitle().length() > 15){
+                StringBuffer one = new StringBuffer();
+                one.append(listItems.get(position).getTitle().substring(0,15));
+                one.append("...");
+                textViewName.setText(one.toString());
+            }
+            else{
+                textViewName.setText(listItems.get(position).getTitle());
+            }
             textViewCost.setText(listItems.get(position).getCostList().get(0) + " | " + dist + "Mi");
             return view;
         }

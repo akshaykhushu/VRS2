@@ -86,7 +86,10 @@ public class Info extends AppCompatActivity {
     ArrayList<String> costList = new ArrayList<>();
     EditText eT;
     int imgLoc =0;
+    Button uploadButton;
+    boolean uploadEnabled= false;
     Button saveButton;
+    boolean saveEnabled = true;
 
     EditText eTdes;
     EditText eTcost;
@@ -131,6 +134,9 @@ public class Info extends AppCompatActivity {
             e.printStackTrace();
         }
 
+        uploadButton = findViewById(R.id.button);
+//        uploadButton.setClickable(uploadEnabled);
+//        uploadButton.setEnabled(uploadEnabled);
         saveButton = findViewById(R.id.buttonSave);
         eT = findViewById(R.id.nameEditText);
         eTdes = findViewById(R.id.editTextDescription);
@@ -206,9 +212,21 @@ public class Info extends AppCompatActivity {
                     return;
                 }
 
+                if(uploadEnabled != true){
+                    Toast.makeText(getApplicationContext(), "You need to save before you can add more images", Toast.LENGTH_SHORT).show();
+                    return;
+                }
+
+
+
                 imageUri = FileProvider.getUriForFile(getApplicationContext(),"com.bazr2.android.fileprovider", file );
                 Intent cameraIntent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
                 cameraIntent.putExtra(android.provider.MediaStore.EXTRA_OUTPUT, imageUri);
+//                uploadButton.setClickable(false);
+//                uploadButton.setEnabled(false);
+//                uploadButton.setActivated(false);
+                uploadEnabled=false;
+                saveEnabled=true;
                 startActivityForResult(cameraIntent, 123);
 
             }
@@ -283,18 +301,34 @@ public class Info extends AppCompatActivity {
         saveButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                if(eTdes.getText().toString() == "" || eTdes.getText().toString() == null ){
-                    Toast.makeText(getApplicationContext(), "Please Enter Description", Toast.LENGTH_SHORT).show();
+
+
+                Spinner spinner = findViewById(R.id.spinnerCurrency);
+                String text = spinner.getSelectedItem().toString();
+
+                if (saveEnabled != true){
+                    Toast.makeText(getApplicationContext(), "Already Saved", Toast.LENGTH_SHORT).show();
                     return;
                 }
-                if(eTcost.getText().toString() == "" || eTcost.getText().toString() == null ){
-                    Toast.makeText(getApplicationContext(), "Please Enter Cost", Toast.LENGTH_SHORT).show();
+                if (TextUtils.isEmpty(eTdes.getText().toString()) || TextUtils.isEmpty((eT.getText().toString().trim()))){
+                    Toast.makeText(getApplicationContext(), "Description is a required Field", Toast.LENGTH_SHORT).show();
+                    return;
+                }
+                if (TextUtils.isEmpty(eTcost.getText().toString()) || TextUtils.isEmpty((eT.getText().toString().trim()))){
+                    Toast.makeText(getApplicationContext(), "Cost is a required Field", Toast.LENGTH_SHORT).show();
                     return;
                 }
                     descriptionList.add(imgLoc, eTdes.getText().toString());
-                    costList.add(imgLoc,eTcost.getText().toString());
+                    costList.add(imgLoc,text + eTcost.getText().toString());
                     Toast.makeText(getApplicationContext(), "Saved", Toast.LENGTH_SHORT).show();
                     imgLoc++;
+//                    uploadEnabled = true;
+                saveEnabled =false;
+
+//                uploadButton.setEnabled(true);
+//                uploadButton.setActivated(true);
+//                uploadButton.setClickable(true);
+                uploadEnabled=true;
             }
         });
 
@@ -365,8 +399,11 @@ public class Info extends AppCompatActivity {
             }, 200);
             return;
         }
-        Spinner spinner = findViewById(R.id.spinnerCurrency);
-        String text = spinner.getSelectedItem().toString();
+
+        if(uploadEnabled != true){
+            Toast.makeText(getApplicationContext(), "You need to save before you can post", Toast.LENGTH_SHORT).show();
+            return;
+        }
 
         GPSTracker tracker = new GPSTracker(this);
         if (!tracker.canGetLocation()) {
@@ -413,26 +450,11 @@ public class Info extends AppCompatActivity {
         databaseReference.child("Id").setValue(firebaseAuth1.getCurrentUser().getUid());
         MapsActivity.upload = 1;
         Intent intent = new Intent(this, MapsActivity.class);
+        saveEnabled=true;
         intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
         startActivity(intent);
         finish();
     }
 
-//    private Location getLastKnownLocation() {
-//        locationManager = (LocationManager)getApplicationContext().getSystemService(LOCATION_SERVICE);
-//        List<String> providers = locationManager.getProviders(true);
-//        Location bestLocation = null;
-//        for (String provider : providers) {
-//            Location l = locationManager.getLastKnownLocation(provider);
-//            if (l == null) {
-//                continue;
-//            }
-//            if (bestLocation == null || l.getAccuracy() < bestLocation.getAccuracy()) {
-//                // Found best last known location: %s", l);
-//                bestLocation = l;
-//            }
-//        }
-//        return bestLocation;
-//    }
 
 }

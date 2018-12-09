@@ -12,7 +12,7 @@
         android:layout_alignParentTop="true"
         android:layout_centerHorizontal="true"
         android:layout_marginTop="20dp"
-        android:text="BAZЯ"
+        android:text="BAAZЯ"
         android:textColor="@android:color/holo_orange_dark"
         android:textSize="56sp" />
 
@@ -42,11 +42,11 @@
 
     <Button
         android:id="@+id/buttonSignIn"
-        android:layout_width="wrap_content"
-        android:layout_height="33dp"
+        android:layout_width="106dp"
+        android:layout_height="wrap_content"
         android:layout_alignParentBottom="true"
         android:layout_centerHorizontal="true"
-        android:layout_marginBottom="252dp"
+        android:layout_marginBottom="237dp"
         android:background="@android:color/holo_orange_dark"
         android:text="Sign In"
         android:textColor="@android:color/white" />
@@ -55,28 +55,30 @@
         android:id="@+id/textViewRegister"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_alignBottom="@+id/textView3"
+        android:layout_alignParentBottom="true"
         android:layout_centerHorizontal="true"
+        android:layout_marginBottom="88dp"
         android:text="New User? Register here"
         android:textColor="@android:color/holo_orange_dark" />
 
     <TextView
         android:id="@+id/textView"
         android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
+        android:layout_height="33dp"
         android:layout_alignParentBottom="true"
         android:layout_centerHorizontal="true"
-        android:layout_marginBottom="184dp"
-        android:text="or:"
+        android:layout_marginBottom="196dp"
+        android:text="OR"
         android:textColor="@android:color/holo_orange_dark" />
 
     <ImageButton
         android:id="@+id/imageButtonGoogleSignIn"
-        android:layout_width="match_parent"
-        android:layout_height="77dp"
+        android:layout_width="374dp"
+        android:layout_height="69dp"
         android:layout_alignParentBottom="true"
-        android:layout_centerHorizontal="true"
-        android:layout_marginBottom="110dp"
+        android:layout_alignParentStart="true"
+        android:layout_marginBottom="137dp"
+        android:layout_marginStart="10dp"
         android:background="@android:color/transparent"
         app:srcCompat="@drawable/signwithgoogle" />
 

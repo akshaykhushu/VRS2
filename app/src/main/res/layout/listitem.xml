@@ -26,8 +26,10 @@
         android:layout_marginTop="152dp"
         android:text="TextView"
         android:textAlignment="viewEnd"
+        android:maxLines="1"
+        android:autoSizeTextType="uniform"
         android:textColor="@android:color/white"
-        android:textSize="20sp" />
+        android:textSize="16sp" />
 
     <TextView
         android:id="@+id/textViewListItemName"
@@ -37,8 +39,10 @@
         android:layout_alignTop="@+id/textViewListItemCost"
         android:layout_marginStart="20dp"
         android:text="TextView"
+        android:maxLines="1"
+        android:autoSizeTextType="uniform"
         android:textAlignment="viewStart"
         android:textColor="@android:color/white"
-        android:textSize="20sp" />
+        android:textSize="16sp" />
 
 </RelativeLayout>

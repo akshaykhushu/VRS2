@@ -47,7 +47,7 @@
         android:layout_marginLeft="20dp"
         android:layout_marginRight="20dp"
         android:ems="10"
-        android:hint="Name"
+        android:hint="Business Name"
         android:inputType="textPersonName"
         tools:layout_editor_absoluteX="84dp"
         tools:layout_editor_absoluteY="298dp" />
@@ -107,7 +107,7 @@
             android:layout_marginRight="2dp"
             android:layout_marginBottom="2dp"
             android:onClick="Upload"
-            android:text="Upload" />
+            android:text="Post" />
 
         <Button
             android:id="@+id/buttonSave"

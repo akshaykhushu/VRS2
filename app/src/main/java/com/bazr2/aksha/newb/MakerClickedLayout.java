@@ -114,9 +114,12 @@ public class MakerClickedLayout extends AppCompatActivity {
 
         if (!id.equals(firebaseAuth.getUid())){
             imageButtonDelete.setVisibility(View.INVISIBLE);
-            imageButtonEdit.setVisibility(View.INVISIBLE);
         }
+
+        imageButtonEdit.setVisibility(View.INVISIBLE);
         context = getApplicationContext();
+
+
 
 
         //******************************************************************************************
