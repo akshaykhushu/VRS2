@@ -47,7 +47,8 @@
     <ListView
         android:id="@+id/dynamicList"
         android:layout_width="match_parent"
-        android:dividerHeight="1px"
+        android:dividerHeight="3dp"
+        android:divider="@android:color/white"
         android:clickable="true"
         android:layout_height="match_parent" />
 

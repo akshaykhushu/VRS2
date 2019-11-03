@@ -35,6 +35,8 @@ public class SearchAdapter extends RecyclerView.Adapter<SearchAdapter.SearchView
     ArrayList<String> latiList;
     ArrayList<Double> distanceList;
     ArrayList<String> longList;
+    ArrayList<String> stateList;
+    ArrayList<String> reportList;
     Double myLatitude;
     Double myLongitude;
 
@@ -55,7 +57,7 @@ public class SearchAdapter extends RecyclerView.Adapter<SearchAdapter.SearchView
         }
     }
 
-    public SearchAdapter(Context context, ArrayList<String> titleList, ArrayList<ArrayList<String>> costList2D, ArrayList<ArrayList<String>> bitmapList2D, ArrayList<ArrayList<String>> descriptionList2D, ArrayList<String> uidList, ArrayList<String> latiList, ArrayList<String> longList, ArrayList<Double> distanceList ) {
+    public SearchAdapter(Context context, ArrayList<String> titleList, ArrayList<ArrayList<String>> costList2D, ArrayList<ArrayList<String>> bitmapList2D, ArrayList<ArrayList<String>> descriptionList2D, ArrayList<String> uidList,ArrayList<String> latiList, ArrayList<String> longList, ArrayList<String> stateList,ArrayList<String> reportList , ArrayList<Double> distanceList ) {
         this.context = context;
         this.titleList = titleList;
         this.costList2D = costList2D;
@@ -65,6 +67,8 @@ public class SearchAdapter extends RecyclerView.Adapter<SearchAdapter.SearchView
         this.latiList = latiList;
         this.longList = longList;
         this.distanceList = distanceList;
+        this.stateList = stateList;
+        this.reportList = reportList;
 
         try {
             for (int i = 0; i < distanceList.size(); i++) {
@@ -78,6 +82,8 @@ public class SearchAdapter extends RecyclerView.Adapter<SearchAdapter.SearchView
                         String templati = latiList.get(i);
                         ArrayList<String> tempArrayList = bitmapList2D.get(i);
                         String templong = longList.get(i);
+                        String tempState = stateList.get(i);
+                        String tempReport = reportList.get(i);
 
                         distanceList.add(i, distanceList.get(j));
                         titleList.add(i, titleList.get(j));
@@ -86,7 +92,10 @@ public class SearchAdapter extends RecyclerView.Adapter<SearchAdapter.SearchView
                         uidList.add(i, uidList.get(j));
                         latiList.add(i, latiList.get(j));
                         longList.add(i, longList.get(j));
+                        stateList.add(i, stateList.get(j));
+                        reportList.add(i, reportList.get(j));
                         bitmapList2D.add(i, bitmapList2D.get(j));
+
                         distanceList.remove(i + 1);
                         titleList.remove(i + 1);
                         costList2D.remove(i + 1);
@@ -94,6 +103,8 @@ public class SearchAdapter extends RecyclerView.Adapter<SearchAdapter.SearchView
                         uidList.remove(i + 1);
                         latiList.remove(i + 1);
                         longList.remove(i + 1);
+                        stateList.remove(i + 1);
+                        reportList.remove(i + 1);
                         bitmapList2D.remove(i + 1);
 
 
@@ -104,7 +115,10 @@ public class SearchAdapter extends RecyclerView.Adapter<SearchAdapter.SearchView
                         uidList.add(j, tempUid);
                         latiList.add(j, templati);
                         longList.add(j, templong);
+                        stateList.add(j, tempState);
+                        reportList.add(j, tempReport);
                         bitmapList2D.add(j, tempArrayList);
+
                         distanceList.remove(j + 1);
                         titleList.remove(j + 1);
                         costList2D.remove(j + 1);
@@ -112,6 +126,8 @@ public class SearchAdapter extends RecyclerView.Adapter<SearchAdapter.SearchView
                         uidList.remove(j + 1);
                         latiList.remove(j + 1);
                         longList.remove(j + 1);
+                        stateList.remove(j + 1);
+                        reportList.remove(j + 1);
                         bitmapList2D.remove(j + 1);
 
 
@@ -144,22 +160,15 @@ public class SearchAdapter extends RecyclerView.Adapter<SearchAdapter.SearchView
         }
         float[] distance = new float[10];
         Location.distanceBetween(myLatitude, myLongitude, Double.parseDouble(latiList.get(position)),  Double.parseDouble(longList.get(position)), distance);
-//        Glide.with(ListActivity.this).load(Uri.parse(listItems.get(position).getBitmapUrl().get(0))).into(imageView);
 
         double distMiles = (double) distance[0] * 0.000621371;
         String dist = new DecimalFormat("#.##").format(Double.valueOf(distMiles));
 
         Double distDouble = Double.parseDouble(dist);
-//            if (distDouble > thresholdDistance){
-//                return null;
-//            }
-//            Picasso.with(ListActivity.this).load(Uri.parse(listItems.get(position).getBitmapUrl().get(0))).into(imageView);
-//        holder.textViewDistance.setText(" | "+ dist + " Mi");
         holder.textViewName.setText(titleList.get(position));
         holder.textViewCost.setText(costList2D.get(position).get(0)+ " | " + dist + " Mi");
 
         Glide.with(context).load(bitmapList2D.get(position).get(0)).into(holder.imageView);
-//        Picasso.with(context).load(bitmapList2D.get(position).get(0)).into(holder.imageView);
 
         holder.itemView.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -168,15 +177,15 @@ public class SearchAdapter extends RecyclerView.Adapter<SearchAdapter.SearchView
                 intent.putExtra("Title", titleList.get(position));
                 intent.putExtra("Cost", costList2D.get(position));
                 intent.putExtra("Description", descriptionList2D.get(position));
-                //intent.putExtra("Bitmap", bitmapList.get(position));
                 intent.putStringArrayListExtra("Bitmap", bitmapList2D.get(position));
                 intent.putExtra("Latitude", latiList.get(position));
                 intent.putExtra("Longitude", longList.get(position));
                 intent.putExtra("Id", uidList.get(position));
+                intent.putExtra("Reported", reportList.get(position));
+                intent.putExtra("State", stateList.get(position));
                 context.startActivity(intent);
             }
         });
-
     }
 
     @Override

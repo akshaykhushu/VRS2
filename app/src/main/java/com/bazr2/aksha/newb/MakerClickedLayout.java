@@ -1,8 +1,10 @@
 package com.bazr2.aksha.newb;
 
 import android.annotation.SuppressLint;
+import android.app.AlertDialog;
 import android.app.ProgressDialog;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
@@ -22,6 +24,7 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.ImageView;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.bumptech.glide.Glide;
@@ -55,6 +58,7 @@ public class MakerClickedLayout extends AppCompatActivity {
     Bitmap image;
     String longitude;
     String latitude;
+    String reported;
     String imageUrl;
     String id;
     ArrayList<String> bitmapUrl;
@@ -75,6 +79,8 @@ public class MakerClickedLayout extends AppCompatActivity {
     EditText eT;
     EditText eTdes;
     EditText eTcost;
+    TextView reportPost;
+    DatabaseReference databaseReference;
 
     File myDir = null;
 
@@ -84,20 +90,30 @@ public class MakerClickedLayout extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_maker_clicked_layout);
 //        SGD = new ScaleGestureDetector(this, new ScaleListener());
-         eT = findViewById(R.id.editTextNameMarkerClicked);
-         eTdes = findViewById(R.id.editTextDescriptionMarkerClicked);
-         eTcost = findViewById(R.id.editTextCostMarkerClicked);
+        eT = findViewById(R.id.editTextNameMarkerClicked);
+        eTdes = findViewById(R.id.editTextDescriptionMarkerClicked);
+        eTcost = findViewById(R.id.editTextCostMarkerClicked);
         imageView = findViewById(R.id.imageViewMarkerClicked);
         buttonNextMarkerClicked = findViewById(R.id.buttonNextMarkerClicked);
         buttonPreviousMarkerClicked = findViewById(R.id.buttonPreviousMarkerClicked);
         imageButtonDelete = findViewById(R.id.imageButtonDelete);
         imageButtonEdit = findViewById(R.id.imageButtonEdit);
+        reportPost = findViewById(R.id.reportPost);
 
         firebaseAuth = FirebaseAuth.getInstance();
         eT.setText(getIntent().getStringExtra("Title").toString());
         latitude = getIntent().getStringExtra("Latitude").toString();
         longitude = getIntent().getStringExtra("Longitude").toString();
-        id = getIntent().getStringExtra("Id").toString();
+        reported = getIntent().getStringExtra("Reported").toString();
+        if (LoginActivity.isGuest){
+            id = "1";
+            reportPost.setVisibility(View.INVISIBLE);
+            databaseReference = FirebaseDatabase.getInstance().getReference("1");
+        }
+        else{
+            id = getIntent().getStringExtra("Id").toString();
+            databaseReference = FirebaseDatabase.getInstance().getReference(id);
+        }
         totalImages = getIntent().getIntExtra("TotalImages", 1);
         bitmapUrl = getIntent().getStringArrayListExtra("Bitmap");
         descriptionList = getIntent().getStringArrayListExtra("Description");
@@ -118,6 +134,35 @@ public class MakerClickedLayout extends AppCompatActivity {
 
         imageButtonEdit.setVisibility(View.INVISIBLE);
         context = getApplicationContext();
+
+
+
+        reportPost.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+
+                AlertDialog.Builder dlgAlert  = new AlertDialog.Builder(MakerClickedLayout.this, AlertDialog.THEME_HOLO_LIGHT);
+                dlgAlert.setMessage("Are you sure you want to report this post?");
+                dlgAlert.setTitle("Report Post");
+                dlgAlert.setPositiveButton("OK", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        databaseReference.child("Reported").setValue("True");
+                        Toast.makeText(getApplicationContext(), "This post has been reported. A decision will be made in 24hrs regarding it.", Toast.LENGTH_LONG).show();
+                        imageView.setVisibility(View.INVISIBLE);
+                        imageView.setImageResource(android.R.color.transparent);
+                        imageView.setClickable(false);
+                        buttonNextMarkerClicked.setVisibility(View.INVISIBLE);
+                        buttonPreviousMarkerClicked.setVisibility(View.INVISIBLE);
+                        reportPost.setVisibility(View.INVISIBLE);
+                    }
+                });
+                dlgAlert.setNegativeButton("Cancel", null);
+                dlgAlert.setCancelable(true);
+                dlgAlert.create().show();
+
+            }
+        });
 
 
 
@@ -187,13 +232,28 @@ public class MakerClickedLayout extends AppCompatActivity {
 
 
         Bitmap bitmap = BitmapFactory.decodeFile(storedImagePath.get(bitmapUrl.get(0)));
-        imageView.setImageBitmap(bitmap);
+        if(reported.equals("True")){
+            imageView.setVisibility(View.INVISIBLE);
+            imageView.setImageResource(android.R.color.transparent);
+            imageView.setClickable(false);
+            reportPost.setVisibility(View.INVISIBLE);
+            Toast.makeText(getApplicationContext(), "This post has been flagged by some user.", Toast.LENGTH_LONG).show();
+            buttonNextMarkerClicked.setVisibility(View.INVISIBLE);
+            buttonPreviousMarkerClicked.setVisibility(View.INVISIBLE);
+        }
+        else{
+            imageView.setImageBitmap(bitmap);
+        }
+
 
         buttonNextMarkerClicked.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                if(reported.equals("True")){
+                    imageView.setImageResource(android.R.color.transparent);
+                    return;
+                }
                 if (current >= bitmapUrl.size() - 1) {
-//                    Toast.makeText(getApplicationContext(), "No More Images", Toast.LENGTH_SHORT).show();
                     current = 0;
                     Glide.with(getApplicationContext()).load(bitmapUrl.get(current)).into(imageView);
                     eTdes.setText(descriptionList.get(current));
@@ -201,18 +261,20 @@ public class MakerClickedLayout extends AppCompatActivity {
                     return;
                 }
                 current++;
-                Glide.with(getApplicationContext()).load(bitmapUrl.get(current)).into(imageView);
-                eTdes.setText(descriptionList.get(current));
-                eTcost.setText(costList.get(current));
-
+                    Glide.with(getApplicationContext()).load(bitmapUrl.get(current)).into(imageView);
+                    eTdes.setText(descriptionList.get(current));
+                    eTcost.setText(costList.get(current));
             }
         });
 
         buttonPreviousMarkerClicked.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                if(reported.equals("True")){
+                    imageView.setImageResource(android.R.color.transparent);
+                    return;
+                }
                 if (current <= 0) {
-//                    Toast.makeText(getApplicationContext(), "No More Images", Toast.LENGTH_SHORT).show();
                     current = bitmapUrl.size()-1;
                     Glide.with(getApplicationContext()).load(bitmapUrl.get(current)).into(imageView);
                     eTdes.setText(descriptionList.get(current));
@@ -220,10 +282,9 @@ public class MakerClickedLayout extends AppCompatActivity {
                     return;
                 }
                 current--;
-                Glide.with(getApplicationContext()).load(bitmapUrl.get(current)).into(imageView);
-                eTdes.setText(descriptionList.get(current));
-                eTcost.setText(costList.get(current));
-
+                    Glide.with(getApplicationContext()).load(bitmapUrl.get(current)).into(imageView);
+                    eTdes.setText(descriptionList.get(current));
+                    eTcost.setText(costList.get(current));
             }
         });
 
@@ -235,4 +296,12 @@ public class MakerClickedLayout extends AppCompatActivity {
         startActivity(intent);
     }
 
+    @Override
+    public void onBackPressed() {
+        super.onBackPressed();
+        finish();
+        Intent intent = new Intent(getApplicationContext(), MapsActivity.class);
+        intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+        startActivity(intent);
+    }
 }

@@ -22,9 +22,12 @@ import android.support.v4.widget.DrawerLayout;
 import android.util.Log;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.Button;
+import android.widget.CompoundButton;
 import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.RelativeLayout;
+import android.widget.Switch;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -60,10 +63,15 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     public static Map<String, MarkerInfo> markerInfoMap;
     public static Map<String, Double> markerInfoDistanceMap;
     public static ClusterManager<MarkerInfo> mClusterManager;
-//    ClusterManager<MarkerItem> clusterManager;
+    public Switch aSwitch;
+    public Button stateButton;
+    public boolean isGuest = false;
     int count=0;
 
+    LatLng myLocation;
 
+
+    public static int MapsTotalCount= 0;
     public static String UserId;
     Double myLatitude;
     Double myLongitude;
@@ -86,20 +94,48 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         markerInfoMap = new HashMap<>();
         markerInfoMap.clear();
         firebaseAuth = FirebaseAuth.getInstance();
-        //mFusedLocationProviderClient = LocationServices.getFusedLocationProviderClient(this);
         SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager()
                 .findFragmentById(R.id.map);
 
         mapFragment.getMapAsync(this);
         setNavigationViewListner();
-        UserId = getIntent().getStringExtra("UserId");
+        UserId = LoginActivity.userId;
         FloatingActionButton b = findViewById(R.id.CameraActionButton);
-        markerInfoDistanceMap = new HashMap<>();
-        markerInfoDistanceMap.clear();
+
+
+        stateButton = findViewById(R.id.stateButton);
+
+        stateButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if (stateButton.getText().equals("I am open")){
+                    stateButton.setText("I am closed");
+                    firebaseDatabase.getReference(UserId).child("State").setValue("closed");
+                }
+                else{
+                    stateButton.setText("I am open");
+                    firebaseDatabase.getReference(UserId).child("State").setValue("open");
+                }
+
+            }
+        });
+
         final NavigationView navigationView =  findViewById(R.id.navigation_view);
         View hView =  navigationView.getHeaderView(0);
         TextView nav_user = hView.findViewById(R.id.textViewUserId);
-        nav_user.setText(firebaseAuth.getCurrentUser().getEmail());
+        if (LoginActivity.isGuest) {
+            b.setVisibility(View.INVISIBLE);
+            stateButton.setVisibility(View.INVISIBLE);
+            nav_user.setText("Guest");
+        }
+        else{
+            nav_user.setText(firebaseAuth.getCurrentUser().getEmail());
+            stateButton.setVisibility(View.VISIBLE);
+        }
+        markerInfoDistanceMap = new HashMap<>();
+        markerInfoDistanceMap.clear();
+
+
         EditText et = findViewById(R.id.editTextSearchBar);
 
 
@@ -134,6 +170,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         } else {
             myLatitude = tracker.getLatitude();
             myLongitude = tracker.getLongitude();
+            myLocation = new LatLng(myLatitude, myLongitude);
         }
 
         b.setOnClickListener(new View.OnClickListener() {
@@ -182,7 +219,9 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                         markerInfo.setLongitude(snapshot.child("LocationLong").getValue().toString());
                         markerInfo.setLatitude(snapshot.child("LocationLati").getValue().toString());
                         markerInfo.setId(snapshot.child("Id").getValue().toString());
+                        markerInfo.setReport(snapshot.child("Reported").getValue().toString());
                         markerInfo.setTitle(snapshot.child("Title").getValue().toString());
+                        markerInfo.setState(snapshot.child("State").getValue().toString());
                         title = snapshot.child("Title").getValue().toString();
 
 
@@ -196,15 +235,53 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                         if (!markerInfoMap.containsKey(userId)){
                             MapsActivity.markerInfoMap.put(userId, markerInfo);
                             MapsActivity.markerInfoDistanceMap.put(userId, distDouble);
+
                         }
+
                         setMarker(markerInfo);
                     }catch(Exception e){
                         Log.e("Exception Caught","UserId Not found");
                     }
 
+                }
 
+                if (!MapsActivity.markerInfoMap.containsKey(MapsActivity.UserId)){
+                    stateButton.setVisibility(View.INVISIBLE);
 
                 }
+                else{
+                    if(LoginActivity.isGuest){
+                        stateButton.setVisibility(View.INVISIBLE);
+                    }
+                    else{
+                        stateButton.setVisibility(View.VISIBLE);
+                        firebaseDatabase.getReference(UserId).child("State").addValueEventListener(new ValueEventListener() {
+
+                            @Override
+                            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                                try{
+                                    if (dataSnapshot.getValue().toString().equals("open")){
+                                        stateButton.setText("I am open");
+                                    }
+                                    else{
+                                        stateButton.setText("I am closed");
+                                    }
+                                }
+                                catch (Exception e){
+                                    Log.e("stateButtonChecked", "Not present. App will continue");
+                                }
+
+                            }
+
+                            @Override
+                            public void onCancelled(@NonNull DatabaseError databaseError) {
+
+                            }
+                        });
+                    }
+
+                }
+
             }
 
             @Override
@@ -212,6 +289,10 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                 Log.w("Value from DB", "OnCancelledCalled");
             }
         });
+
+
+
+
 
     }
 
@@ -255,6 +336,12 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         }
         mMap.setMyLocationEnabled(true);
 
+
+
+        myLocation = new LatLng(myLatitude, myLongitude);
+        mMap.moveCamera(CameraUpdateFactory.newLatLng(myLocation));
+        mMap.animateCamera(CameraUpdateFactory.zoomTo(17.0f));
+
         mClusterManager = new ClusterManager<>(this, mMap);
         mMap.clear();
         mClusterManager.clearItems();
@@ -287,7 +374,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
 
         try{
-            LatLng myLocation = new LatLng(myLatitude, myLongitude);
+            myLocation = new LatLng(myLatitude, myLongitude);
             mMap.moveCamera(CameraUpdateFactory.newLatLng(myLocation));
             mMap.animateCamera(CameraUpdateFactory.zoomTo(17.0f));
 
@@ -307,8 +394,8 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         LatLng current = new LatLng(Double.parseDouble(markerInfo.getLatitude()), Double.parseDouble(markerInfo.getLongitude()));
         mClusterManager.addItem(markerInfo);
         mClusterManager.cluster();
-        mMap.moveCamera(CameraUpdateFactory.newLatLng(current));
-        mMap.animateCamera(CameraUpdateFactory.zoomTo(17.0f));
+//        mMap.moveCamera(CameraUpdateFactory.newLatLng(current));
+//        mMap.animateCamera(CameraUpdateFactory.zoomTo(17.0f));
         mClusterManager.setOnClusterItemClickListener(new ClusterManager.OnClusterItemClickListener<MarkerInfo>() {
             @Override
             public boolean onClusterItemClick(MarkerInfo markerInfo) {
@@ -319,6 +406,8 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                 intent.putStringArrayListExtra("Cost", markerInfo.getCostList());
                 intent.putExtra("Title", markerInfo.getTitle());
                 intent.putExtra("Id", markerInfo.getId());
+                intent.putExtra("Reported", markerInfo.getReport());
+                intent.putExtra("State", markerInfo.getReport());
                 intent.putExtra("Longitude", markerInfo.getLongitude());
                 intent.putExtra("Latitude", markerInfo.getLatitude());
                 startActivity(intent);
@@ -340,10 +429,6 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         });
 
 
-        LatLng myLocation = new LatLng(myLatitude, myLongitude);
-        mMap.moveCamera(CameraUpdateFactory.newLatLng(myLocation));
-        mMap.animateCamera(CameraUpdateFactory.zoomTo(17.0f));
-
     }
 
     private void setNavigationViewListner() {
@@ -362,6 +447,13 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
             }
 
             case R.id.nav_Images: {
+
+                if (LoginActivity.isGuest){
+                    Toast.makeText(getApplicationContext(), "Please sign in to post something", Toast.LENGTH_SHORT).show();
+
+                    break;
+                }
+
                 File folder = new File(Environment.getExternalStorageDirectory()+ File.separator + "bazr");
                 if(!folder.exists()){
                     folder.mkdir();
@@ -386,12 +478,6 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                 startActivity(intent);
                 break;
             }
-
-//            case R.id.nav_Categories : {
-//                Intent intent = new Intent(getApplicationContext(), CategoryActivity.class);
-//                startActivity(intent);
-//                break;
-//            }
 
             case R.id.nav_LogOut  :{
                 firebaseAuth.signOut();

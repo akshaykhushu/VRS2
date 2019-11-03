@@ -22,7 +22,7 @@ public class RegisterActivity extends AppCompatActivity {
     EditText password;
     Button signUp;
     FirebaseAuth firebaseAuth;
-    String userId;
+    public static String userId;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -71,7 +71,7 @@ public class RegisterActivity extends AppCompatActivity {
             public void onComplete(@NonNull Task<AuthResult> task) {
                 if (task.isSuccessful()) {
                     Toast.makeText(getApplicationContext(), "An Email has been sent to your email id. Pls verify your email.", Toast.LENGTH_SHORT).show();
-//                    finish();
+                    finish();
 //                    Intent intent = new Intent(getApplicationContext(), MapsActivity.class);
 //                    userId =  firebaseAuth.getCurrentUser().getUid();
 //                    intent.putExtra("UserId", userId);
@@ -94,8 +94,8 @@ public class RegisterActivity extends AppCompatActivity {
                             if(task.isSuccessful()){
                                 finish();
                                 Intent intent = new Intent(getApplicationContext(), LoginActivity.class);
-//                                userId =  firebaseUser.getUid();
-//                                intent.putExtra("UserId", userId);
+                                userId =  firebaseUser.getUid();
+                                intent.putExtra("UserId", userId);
                                 startActivity(intent);
                             }
                         }

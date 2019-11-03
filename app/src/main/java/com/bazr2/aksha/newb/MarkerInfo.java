@@ -1,9 +1,6 @@
 package com.bazr2.aksha.newb;
 
 
-import android.graphics.Bitmap;
-import android.graphics.drawable.Icon;
-
 import com.google.android.gms.maps.model.BitmapDescriptor;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.maps.android.clustering.ClusterItem;
@@ -17,10 +14,28 @@ public class MarkerInfo implements ClusterItem {
     ArrayList<String> descriptionList;
     String longitude;
     String latitude;
+    String state;
+    String report;
     String id;
     String title;
     Integer totalImages;
     BitmapDescriptor icon;
+
+    public String getReport() {
+        return report;
+    }
+
+    public void setReport(String report) {
+        this.report = report;
+    }
+
+    public String getState() {
+        return state;
+    }
+
+    public void setState(String state) {
+        this.state = state;
+    }
 
     public BitmapDescriptor getIcon() {
         return icon;

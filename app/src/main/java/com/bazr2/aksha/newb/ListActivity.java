@@ -130,6 +130,7 @@ public class ListActivity extends AppCompatActivity {
         listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
 
             public void onItemClick(AdapterView<?> adapter, View view, int position, long arg) {
+                finish();
                 Intent intent = new Intent(getApplicationContext(), MakerClickedLayout.class);
                 intent.putStringArrayListExtra("Bitmap", listItems.get(position).getBitmapUrl());
                 intent.putExtra("Title",listItems.get(position).getTitle());
@@ -137,6 +138,7 @@ public class ListActivity extends AppCompatActivity {
                 intent.putExtra("Cost",listItems.get(position).getCostList());
                 intent.putExtra("Longitude", listItems.get(position).getLongitude());
                 intent.putExtra("Latitude", listItems.get(position).getLatitude());
+                intent.putExtra("Reported", listItems.get(position).getReport());
                 intent.putExtra("Id", listItems.get(position).getId());
                 startActivity(intent);
             }

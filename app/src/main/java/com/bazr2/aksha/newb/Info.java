@@ -93,6 +93,8 @@ public class Info extends AppCompatActivity {
 
     EditText eTdes;
     EditText eTcost;
+    static int countPost=2;
+    String path;
 
 
     private final LocationListener locationListener = new LocationListener() {
@@ -149,13 +151,13 @@ public class Info extends AppCompatActivity {
         Bitmap bm = BitmapFactory.decodeFile(imageStr,options);
         imageView.setImageBitmap(bm);
 
-//        Glide.with(getApplicationContext()).load(downloadUrl.get(0)).into(imageView);
         eT = findViewById(R.id.nameEditText);
-
 
         try {
 
-            databaseReference = FirebaseDatabase.getInstance().getReference(MapsActivity.UserId);
+                databaseReference = FirebaseDatabase.getInstance().getReference(MapsActivity.UserId);
+
+
             databaseReference.addValueEventListener(new ValueEventListener() {
                 @Override
                 public void onDataChange(DataSnapshot dataSnapshot) {
@@ -238,17 +240,22 @@ public class Info extends AppCompatActivity {
         buttonNext.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                if (current >= downloadUrl.size() - 1) {
-                    current = 0;
+                try{
+                    if (current >= downloadUrl.size() - 1) {
+                        current = 0;
+                        Glide.with(getApplicationContext()).load(downloadUrl.get(current)).into(imageView);
+                        eTdes.setText(descriptionList.get(current));
+                        eTcost.setText(costList.get(current));
+                        return;
+                    }
+                    current++;
                     Glide.with(getApplicationContext()).load(downloadUrl.get(current)).into(imageView);
                     eTdes.setText(descriptionList.get(current));
                     eTcost.setText(costList.get(current));
-                    return;
                 }
-                current++;
-                Glide.with(getApplicationContext()).load(downloadUrl.get(current)).into(imageView);
-                eTdes.setText(descriptionList.get(current));
-                eTcost.setText(costList.get(current));
+                catch(Exception e) {
+                    Toast.makeText(getApplicationContext(), "No More Images", Toast.LENGTH_SHORT);
+                }
 
             }
         });
@@ -256,17 +263,23 @@ public class Info extends AppCompatActivity {
         buttonPrevious.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                if (current <= 0) {
-                    current = downloadUrl.size()-1;
+                try{
+
+                    if (current <= 0) {
+                        current = downloadUrl.size()-1;
+                        Glide.with(getApplicationContext()).load(downloadUrl.get(current)).into(imageView);
+                        eTdes.setText(descriptionList.get(current));
+                        eTcost.setText(costList.get(current));
+                        return;
+                    }
+                    current--;
                     Glide.with(getApplicationContext()).load(downloadUrl.get(current)).into(imageView);
                     eTdes.setText(descriptionList.get(current));
                     eTcost.setText(costList.get(current));
-                    return;
                 }
-                current--;
-                Glide.with(getApplicationContext()).load(downloadUrl.get(current)).into(imageView);
-                eTdes.setText(descriptionList.get(current));
-                eTcost.setText(costList.get(current));
+                catch(Exception e) {
+                    Toast.makeText(getApplicationContext(), "No More Images", Toast.LENGTH_SHORT);
+                }
             }
         });
 
@@ -322,12 +335,8 @@ public class Info extends AppCompatActivity {
                     costList.add(imgLoc,text + eTcost.getText().toString());
                     Toast.makeText(getApplicationContext(), "Saved", Toast.LENGTH_SHORT).show();
                     imgLoc++;
-//                    uploadEnabled = true;
                 saveEnabled =false;
 
-//                uploadButton.setEnabled(true);
-//                uploadButton.setActivated(true);
-//                uploadButton.setClickable(true);
                 uploadEnabled=true;
             }
         });
@@ -416,8 +425,7 @@ public class Info extends AppCompatActivity {
         android_id = MapsActivity.UserId;
         FirebaseAuth firebaseAuth = FirebaseAuth.getInstance();
 
-        databaseReference = firebaseDatabase.getReference(firebaseAuth.getCurrentUser().getUid());
-
+        databaseReference = FirebaseDatabase.getInstance().getReference(MapsActivity.UserId);
 
         Log.e("Longitude", String.valueOf(longitude));
         Log.e("Latitude", String.valueOf(latitude));
@@ -446,8 +454,12 @@ public class Info extends AppCompatActivity {
         databaseReference.child("LocationLong").setValue(String.valueOf(longitude));
         databaseReference.child("LocationLati").setValue(String.valueOf(latitude));
         databaseReference.child("Title").setValue(eT.getText().toString());
+        databaseReference.child("State").setValue("open");
+        databaseReference.child("Reported").setValue("False");
+
 
         databaseReference.child("Id").setValue(firebaseAuth1.getCurrentUser().getUid());
+
         MapsActivity.upload = 1;
         Intent intent = new Intent(this, MapsActivity.class);
         saveEnabled=true;

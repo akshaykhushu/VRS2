@@ -15,10 +15,28 @@ public class MarkerInfoSearch implements ClusterItem {
     String latitude;
     String id;
     String title;
+    String state;
+    String reported;
     Integer totalImages;
 
     public Integer getTotalImages() {
         return totalImages;
+    }
+
+    public String getReported() {
+        return reported;
+    }
+
+    public void setReported(String reported) {
+        this.reported = reported;
+    }
+
+    public String getState() {
+        return state;
+    }
+
+    public void setState(String state) {
+        this.state = state;
     }
 
     public void setTotalImages(Integer totalImages) {

@@ -1,13 +1,16 @@
 package com.bazr2.aksha.newb;
 
+import android.Manifest;
 import android.app.AlertDialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.pm.PackageManager;
 import android.location.LocationManager;
 import android.os.Handler;
 import android.provider.Settings;
 import android.support.annotation.NonNull;
+import android.support.v4.app.ActivityCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.text.TextUtils;
@@ -45,11 +48,13 @@ public class LoginActivity extends AppCompatActivity {
     TextView register;
     TextView forgotPassword;
     private FirebaseAuth firebaseAuth;
-    String userId;
+    public static String userId;
     ImageButton googleSignIn;
     private final static int RC_SIGN_IN = 1234;
     GoogleSignInOptions gso;
     GoogleApiClient mGoogleApiClient;
+    TextView continueGuest;
+    public static boolean isGuest = false;
 
 
     @Override
@@ -63,30 +68,53 @@ public class LoginActivity extends AppCompatActivity {
         googleSignIn = findViewById(R.id.imageButtonGoogleSignIn);
         firebaseAuth = FirebaseAuth.getInstance();
         forgotPassword = findViewById(R.id.textViewForgotPassword);
+        continueGuest = findViewById(R.id.textViewContinueGuest);
 
         gso = new GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
                 .requestIdToken(getString(R.string.default_web_client_id))
                 .requestEmail()
                 .build();
 
+        continueGuest.setOnClickListener(new View.OnClickListener() {
+                                             @Override
+                                             public void onClick(View v) {
+                                                 LoginActivity.isGuest = true;
+                                                 RegisterActivity.userId = "1";
+                                                 finish();
+                                                 Intent intent = new Intent(getApplicationContext(), MapsActivity.class);
+                                                 startActivity(intent);
+                                             }
+                                         });
+
         mGoogleApiClient = new GoogleApiClient.Builder(this).enableAutoManage(this, new GoogleApiClient.OnConnectionFailedListener() {
-            @Override
-            public void onConnectionFailed(@NonNull ConnectionResult connectionResult) {
-                Toast.makeText(getApplicationContext(), "Something Went Wrong", Toast.LENGTH_SHORT);
-            }
-        }).addApi(Auth.GOOGLE_SIGN_IN_API, gso).build();
+                    @Override
+                    public void onConnectionFailed(@NonNull ConnectionResult connectionResult) {
+                        Toast.makeText(getApplicationContext(), "Something Went Wrong", Toast.LENGTH_SHORT);
+                    }
+                }).addApi(Auth.GOOGLE_SIGN_IN_API, gso).build();
 
         if (firebaseAuth.getCurrentUser() != null){
             if (firebaseAuth.getCurrentUser().isEmailVerified()){
                 finish();
                 Intent intent = new Intent(getApplicationContext(), MapsActivity.class);
+                LoginActivity.isGuest = false;
                 userId =  firebaseAuth.getCurrentUser().getUid();
+                MapsActivity.UserId = firebaseAuth.getCurrentUser().getUid();
                 intent.putExtra("UserId", userId);
+                Log.e("USserID LOginActivity", userId);
                 startActivity(intent);
             }
             else {
                 Toast.makeText(getApplicationContext(), "Pls Verify your Email", Toast.LENGTH_SHORT).show();
             }
+        }
+
+        if (ActivityCompat.checkSelfPermission(this, Manifest.permission.READ_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(this, Manifest.permission.WRITE_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED) {
+            requestPermissions(new String[]{
+                    Manifest.permission.READ_EXTERNAL_STORAGE, Manifest.permission.WRITE_EXTERNAL_STORAGE,
+                    Manifest.permission.INTERNET, Manifest.permission.CAMERA,android.Manifest.permission.ACCESS_FINE_LOCATION, android.Manifest.permission.ACCESS_COARSE_LOCATION,
+            }, 200);
+            return;
         }
 
         register.setOnClickListener(new View.OnClickListener() {
@@ -146,6 +174,7 @@ public class LoginActivity extends AppCompatActivity {
 
     private void firebaseAuthWithGoogle(GoogleSignInAccount account) {
         AuthCredential credential = GoogleAuthProvider.getCredential(account.getIdToken(), null);
+        LoginActivity.isGuest = false;
         firebaseAuth.signInWithCredential(credential).addOnCompleteListener(this, new OnCompleteListener<AuthResult>() {
             @Override
             public void onComplete(@NonNull Task<AuthResult> task) {
@@ -205,6 +234,7 @@ public class LoginActivity extends AppCompatActivity {
                         }
                         finish();
                         Intent intent = new Intent(getApplicationContext(), MapsActivity.class);
+                        LoginActivity.isGuest = false;
                         userId =  firebaseAuth.getCurrentUser().getUid();
                         intent.putExtra("UserId", userId);
                         startActivity(intent);

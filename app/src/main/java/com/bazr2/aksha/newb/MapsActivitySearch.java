@@ -141,6 +141,8 @@ public class MapsActivitySearch extends FragmentActivity implements OnMapReadyCa
                 intent.putExtra("Latitude", markerInfoSearch.getLatitude());
                 intent.putExtra("Longitude", markerInfoSearch.getLongitude());
                 intent.putExtra("TotalImages", markerInfoSearch.getTotalImages());
+                intent.putExtra("Reported", markerInfoSearch.getReported());
+                intent.putExtra("State", markerInfoSearch.getState());
                 intent.putExtra("Id", markerInfoSearch.getId());
                 startActivity(intent);
                 return true;

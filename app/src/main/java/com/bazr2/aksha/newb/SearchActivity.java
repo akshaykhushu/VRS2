@@ -55,6 +55,8 @@ public class SearchActivity extends AppCompatActivity {
     ArrayList<String> uidList;
     ArrayList<String> latiList;
     ArrayList<String> longList;
+    ArrayList<String> stateList;
+    ArrayList<String> reportedList;
     Double myLatitude;
     Double myLongitude;
     ArrayList<Double> distanceList;
@@ -86,6 +88,8 @@ public class SearchActivity extends AppCompatActivity {
         distanceList = new ArrayList<>();
         longList = new ArrayList<>();
         uidList = new ArrayList<>();
+        stateList = new ArrayList<>();
+        reportedList = new ArrayList<>();
 
 
         searchField.addTextChangedListener(new TextWatcher() {
@@ -117,6 +121,8 @@ public class SearchActivity extends AppCompatActivity {
                     bitmapList2D.clear();
                     costList.clear();
                     descriptionList.clear();
+                    stateList.clear();
+                    reportedList.clear();
                     resultList.removeAllViews();
                     hashMap.clear();
                 }
@@ -155,6 +161,8 @@ public class SearchActivity extends AppCompatActivity {
                 latiList.clear();
                 longList.clear();
                 uidList.clear();
+                stateList.clear();
+                reportedList.clear();
                 distanceList.clear();
                 hashMap.clear();
                 resultList.removeAllViews();
@@ -170,6 +178,8 @@ public class SearchActivity extends AppCompatActivity {
                     String longitude = snapshot.child("LocationLong").getValue(String.class);
                     String latitude = snapshot.child("LocationLati").getValue(String.class);
                     String id = snapshot.child("Id").getValue(String.class);
+                    String state = snapshot.child("State").getValue(String.class);
+                    String reported = snapshot.child("Reported").getValue(String.class);
                     Integer totalImages = Integer.parseInt(snapshot.child("TotalImages").getValue().toString());
                     for (int i=0; i < totalImages; i++){
                         bitmapList.add(snapshot.child("Bitmap"+i).getValue().toString());
@@ -186,6 +196,8 @@ public class SearchActivity extends AppCompatActivity {
                     markerInfoSearch.setLongitude(longitude);
                     markerInfoSearch.setCostList(costList);
                     markerInfoSearch.setId(id);
+                    markerInfoSearch.setState(state);
+                    markerInfoSearch.setReported(reported);
                     markerInfoSearch.setTotalImages(totalImages);
 
 
@@ -211,6 +223,8 @@ public class SearchActivity extends AppCompatActivity {
                         latiList.add(latitude);
                         longList.add(longitude);
                         uidList.add(id);
+                        stateList.add(state);
+                        reportedList.add(reported);
                         hashMap.put(id, markerInfoSearch);
                         counter++;
                     }else{
@@ -229,6 +243,8 @@ public class SearchActivity extends AppCompatActivity {
                                 latiList.add(latitude);
                                 longList.add(longitude);
                                 uidList.add(id);
+                                stateList.add(state);
+                                reportedList.add(reported);
                                 hashMap.put(id, markerInfoSearch);
                                 counter++;
                                 break;
@@ -239,7 +255,7 @@ public class SearchActivity extends AppCompatActivity {
                         break;
                 }
 
-                searchAdapter = new SearchAdapter(SearchActivity.this, titleList, costList2D, bitmapList2D, descriptionList2D, uidList, latiList, longList, distanceList);
+                searchAdapter = new SearchAdapter(SearchActivity.this, titleList, costList2D, bitmapList2D, descriptionList2D, uidList, latiList, longList,  stateList, reportedList, distanceList);
                 resultList.setAdapter(searchAdapter);
 
             }

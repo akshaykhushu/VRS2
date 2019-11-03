@@ -38,7 +38,6 @@
             android:background="@android:color/holo_orange_dark"
             android:layout_height="50dp">
 
-
             <ImageButton
                 android:id="@+id/imageButton"
                 android:layout_width="10dp"
@@ -78,6 +77,18 @@
 
 
         </LinearLayout>
+
+        <Button
+            android:id="@+id/stateButton"
+            android:layout_width="130dp"
+            android:layout_height="wrap_content"
+            android:layout_alignParentEnd="true"
+            android:layout_alignParentTop="true"
+            android:layout_marginEnd="48dp"
+            android:layout_marginTop="88dp"
+            android:textColor="@android:color/white"
+            android:background="@drawable/statebutton"
+            android:text="" />
 
 
     </RelativeLayout>

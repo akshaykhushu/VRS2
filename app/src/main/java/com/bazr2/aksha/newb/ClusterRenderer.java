@@ -17,6 +17,9 @@ import com.google.maps.android.clustering.ClusterManager;
 import com.google.maps.android.clustering.view.DefaultClusterRenderer;
 import com.google.maps.android.ui.IconGenerator;
 
+import java.util.HashMap;
+import java.util.Map;
+
 public  class ClusterRenderer<T extends ClusterItem> extends DefaultClusterRenderer<T> {
     Context context;
     ClusterManager<T> clusterManager;
@@ -29,7 +32,7 @@ public  class ClusterRenderer<T extends ClusterItem> extends DefaultClusterRende
     @Override
     protected boolean shouldRenderAsCluster(Cluster<T> cluster) {
         //start clustering if 2 or more items overlap
-        return cluster.getSize() > 1;
+        return cluster.getSize() > 3;
     }
 
     @Override
@@ -40,7 +43,12 @@ public  class ClusterRenderer<T extends ClusterItem> extends DefaultClusterRende
         try{
             MarkerInfo markerInfo = (MarkerInfo) item;
             IconGenerator iconGenerator = new IconGenerator(context);
-            iconGenerator.setStyle(IconGenerator.STYLE_ORANGE);
+            if (markerInfo.getState().equals("closed")){
+                iconGenerator.setStyle(IconGenerator.STYLE_RED);
+            }
+            else{
+                iconGenerator.setStyle(IconGenerator.STYLE_ORANGE);
+            }
             iconGenerator.setTextAppearance(R.style.iconGenText);
             Bitmap iconBitmap = iconGenerator.makeIcon(markerInfo.getTitle() + " | " + markerInfo.getCostList().get(0));
 //        BitmapDescriptor bitmapDescriptor = BitmapDescriptorFactory.fromBitmap(iconBitmap);
